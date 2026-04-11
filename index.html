@@ -9,9 +9,11 @@
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Google Fonts -->
+    <!-- Preconnect CDNs -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.tailwindcss.com">
+    <link rel="preconnect" href="https://unpkg.com">
     <link href="https://fonts.googleapis.com/css2?family=Mukta:wght@400;500;600;700&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
     
     <!-- Lucide Icons CDN -->
@@ -56,6 +58,16 @@
             font-family: 'Mukta', sans-serif;
         }
         
+        /* FOIT Prevention: Custom fonts with display swap */
+        @font-face {
+            font-family: 'Mukta';
+            font-display: swap;
+        }
+        @font-face {
+            font-family: 'Work Sans';
+            font-display: swap;
+        }
+
         /* Hero Overlay */
         .hero-overlay {
             background: linear-gradient(to bottom, rgba(10, 49, 97, 0.7), rgba(0, 29, 74, 0.8));
@@ -176,6 +188,90 @@
             border-color: #0056B3;
             outline: none;
             box-shadow: 0 0 0 2px rgba(0, 86, 179, 0.2);
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease-in-out;
+            backdrop-filter: blur(4px);
+        }
+        
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .modal-container {
+            transform: scale(0.95);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        
+        .modal-overlay.active .modal-container {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        .scheme-card {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .scheme-card:hover {
+            border-color: #0056B3;
+            background-color: #f8fafc;
+        }
+        /* Lightbox Styles */
+        .lightbox-overlay {
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease-in-out;
+        }
+        
+        .lightbox-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .lightbox-img-container {
+            transform: scale(0.9);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        
+        .lightbox-overlay.active .lightbox-img-container {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        .glass-btn {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            transition: all 0.2s ease;
+        }
+
+        .glass-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1);
+        }
+
+        /* Custom Scrollbar for Modal */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
         }
     </style>
 </head>
@@ -500,81 +596,136 @@
                 </div>
 
                 <!-- CUSTOMIZE: Replace with your village images -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div class="gallery-image-container relative rounded-xl overflow-hidden group aspect-[4/3]">
-                        <img src="./assets/gp_pic.jpeg" alt="Village View" class="w-full h-full object-cover" loading="lazy">
-                        <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-4">
-                            <p class="text-white text-sm font-medium"> <span class="lang-mr">ग्रामपंचायत आष्टा</span><span class="lang-en">Grampanchayat Ashta</span>
+                <div id="gallery-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <!-- Image 1 -->
+                    <div class="gallery-image-container relative rounded-xl overflow-hidden group aspect-[4/3] cursor-pointer shadow-md" onclick="openLightbox(0)">
+                        <img src="./assets/gp_pic.jpeg" alt="Grampanchayat Ashta" class="w-full h-full object-cover" loading="lazy">
+                        <div class="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-colors"></div>
+                        <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-4 transform translate-y-2 group-hover:translate-y-0 transition-transform">
+                            <p class="text-white text-sm font-medium"> 
+                                <span class="lang-mr">ग्रामपंचायत आष्टा</span><span class="lang-en">Grampanchayat Ashta</span>
                             </p>
                         </div>
                     </div>
 
-                    <div class="gallery-image-container relative rounded-xl overflow-hidden group aspect-[4/3]">
-                        <img src="./assets/arogya_shibir.jpeg" alt="Agricultural Work" class="w-full h-full object-cover" loading="lazy">
-                        <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-4">
-                            <p class="text-white text-sm font-medium"><span class="lang-mr">आरोग्य शिबिर</span><span class="lang-en">Health Camp</span></p>
+                    <!-- Image 2 -->
+                    <div class="gallery-image-container relative rounded-xl overflow-hidden group aspect-[4/3] cursor-pointer shadow-md" onclick="openLightbox(1)">
+                        <img src="./assets/arogya_shibir.jpeg" alt="Health Camp" class="w-full h-full object-cover" loading="lazy">
+                        <div class="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-colors"></div>
+                        <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-4 transform translate-y-2 group-hover:translate-y-0 transition-transform">
+                            <p class="text-white text-sm font-medium">
+                                <span class="lang-mr">आरोग्य शिबिर</span><span class="lang-en">Health Camp</span>
+                            </p>
                         </div>
                     </div>
 
-                    <div class="gallery-image-container relative rounded-xl overflow-hidden group aspect-[4/3]">
-                        <img src="./assets/cleanup.jpeg" alt="Rural Life" class="w-full h-full object-cover" loading="lazy">
-                        <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-4">
-                            <p class="text-white text-sm font-medium"><span class="lang-mr">स्वच्छता अभियान</span><span class="lang-en">Cleanup Drive</span> </p>
+                    <!-- Image 3 -->
+                    <div class="gallery-image-container relative rounded-xl overflow-hidden group aspect-[4/3] cursor-pointer shadow-md" onclick="openLightbox(2)">
+                        <img src="./assets/cleanup.jpeg" alt="Cleanup Drive" class="w-full h-full object-cover" loading="lazy">
+                        <div class="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-colors"></div>
+                        <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-4 transform translate-y-2 group-hover:translate-y-0 transition-transform">
+                            <p class="text-white text-sm font-medium">
+                                <span class="lang-mr">स्वच्छता अभियान</span><span class="lang-en">Cleanup Drive</span>
+                            </p>
                         </div>
                     </div>
 
-                    <div class="gallery-image-container relative rounded-xl overflow-hidden group aspect-[4/3]">
-                        <img src="./assets/ek_ghas_mayecha.jpeg" alt="Villagers" class="w-full h-full object-cover" loading="lazy">
-                        <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-4">
-                            <p class="text-white text-sm font-medium"><span class="lang-mr">एक घास मायेचा उपक्रम</span><span class="lang-en">Ek Ghas Mayecha Upakram</span></p>
+                    <!-- Image 4 -->
+                    <div class="gallery-image-container relative rounded-xl overflow-hidden group aspect-[4/3] cursor-pointer shadow-md" onclick="openLightbox(3)">
+                        <img src="./assets/ek_ghas_mayecha.jpeg" alt="Ek Ghas Mayecha Upakram" class="w-full h-full object-cover" loading="lazy">
+                        <div class="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-colors"></div>
+                        <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-4 transform translate-y-2 group-hover:translate-y-0 transition-transform">
+                            <p class="text-white text-sm font-medium">
+                                <span class="lang-mr">एक घास मायेचा उपक्रम</span><span class="lang-en">Ek Ghas Mayecha Upakram</span>
+                            </p>
                         </div>
                     </div>
-                    <div class="gallery-image-container relative rounded-xl overflow-hidden group aspect-[4/3]">
-                        <img src="./assets/ghantagadi.jpeg" alt="Villagers" class="w-full h-full object-cover" loading="lazy">
-                        <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-4">
-                            <p class="text-white text-sm font-medium"><span class="lang-mr">स्वच्छता अभियान</span><span class="lang-en">Cleanup Drive by Ghantagadi</span></p>
+
+                    <!-- Image 5 -->
+                    <div class="gallery-image-container relative rounded-xl overflow-hidden group aspect-[4/3] cursor-pointer shadow-md" onclick="openLightbox(4)">
+                        <img src="./assets/ghantagadi.jpeg" alt="Cleanup Drive by Ghantagadi" class="w-full h-full object-cover" loading="lazy">
+                        <div class="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-colors"></div>
+                        <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-4 transform translate-y-2 group-hover:translate-y-0 transition-transform">
+                            <p class="text-white text-sm font-medium">
+                                <span class="lang-mr">स्वच्छता अभियान</span><span class="lang-en">Cleanup Drive by Ghantagadi</span>
+                            </p>
                         </div>
                     </div>
-                    <div class="gallery-image-container relative rounded-xl overflow-hidden group aspect-[4/3]">
-                        <img src="./assets/gramsabha.jpeg" alt="Villagers" class="w-full h-full object-cover" loading="lazy">
-                        <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-4">
-                            <p class="text-white text-sm font-medium"><span class="lang-mr">ग्रामसभा</span><span class="lang-en">Gramsabha</span></p>
+
+                    <!-- Image 6 -->
+                    <div class="gallery-image-container relative rounded-xl overflow-hidden group aspect-[4/3] cursor-pointer shadow-md" onclick="openLightbox(5)">
+                        <img src="./assets/gramsabha.jpeg" alt="Gramsabha" class="w-full h-full object-cover" loading="lazy">
+                        <div class="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-colors"></div>
+                        <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-4 transform translate-y-2 group-hover:translate-y-0 transition-transform">
+                            <p class="text-white text-sm font-medium">
+                                <span class="lang-mr">ग्रामसभा</span><span class="lang-en">Gramsabha</span>
+                            </p>
                         </div>
                     </div>
-                    <div class="gallery-image-container relative rounded-xl overflow-hidden group aspect-[4/3]">
-                        <img src="./assets/heatwawe_info.jpeg" alt="Villagers" class="w-full h-full object-cover" loading="lazy">
-                        <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-4">
-                            <p class="text-white text-sm font-medium"><span class="lang-mr">उष्माघात माहिती</span><span class="lang-en">Heatwave Information</span></p>
+
+                    <!-- Image 7 -->
+                    <div class="gallery-image-container relative rounded-xl overflow-hidden group aspect-[4/3] cursor-pointer shadow-md" onclick="openLightbox(6)">
+                        <img src="./assets/heatwawe_info.jpeg" alt="Heatwave Information" class="w-full h-full object-cover" loading="lazy">
+                        <div class="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-colors"></div>
+                        <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-4 transform translate-y-2 group-hover:translate-y-0 transition-transform">
+                            <p class="text-white text-sm font-medium">
+                                <span class="lang-mr">उष्माघात माहिती</span><span class="lang-en">Heatwave Information</span>
+                            </p>
                         </div>
                     </div>
-                    <div class="gallery-image-container relative rounded-xl overflow-hidden group aspect-[4/3]">
-                        <img src="./assets/mahila_sabha.jpeg" alt="Villagers" class="w-full h-full object-cover" loading="lazy">
-                        <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-4">
-                            <p class="text-white text-sm font-medium"><span class="lang-mr">महिला बचत गट</span><span class="lang-en">Mahila Bachat Gat</span></p>
+
+                    <!-- Image 8 -->
+                    <div class="gallery-image-container relative rounded-xl overflow-hidden group aspect-[4/3] cursor-pointer shadow-md" onclick="openLightbox(7)">
+                        <img src="./assets/mahila_sabha.jpeg" alt="Mahila Bachat Gat" class="w-full h-full object-cover" loading="lazy">
+                        <div class="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-colors"></div>
+                        <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-4 transform translate-y-2 group-hover:translate-y-0 transition-transform">
+                            <p class="text-white text-sm font-medium">
+                                <span class="lang-mr">महिला बचत गट</span><span class="lang-en">Mahila Bachat Gat</span>
+                            </p>
                         </div>
                     </div>
-                    <div class="gallery-image-container relative rounded-xl overflow-hidden group aspect-[4/3]">
-                        <img src="./assets/palasbag.jpeg" alt="Villagers" class="w-full h-full object-cover" loading="lazy">
-                        <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-4">
-                            <p class="text-white text-sm font-medium"><span class="lang-mr">पलाशबाग</span><span class="lang-en">Palasbag</span></p>
+
+                    <!-- Image 9 -->
+                    <div class="gallery-image-container relative rounded-xl overflow-hidden group aspect-[4/3] cursor-pointer shadow-md" onclick="openLightbox(8)">
+                        <img src="./assets/palasbag.jpeg" alt="Palasbag" class="w-full h-full object-cover" loading="lazy">
+                        <div class="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-colors"></div>
+                        <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-4 transform translate-y-2 group-hover:translate-y-0 transition-transform">
+                            <p class="text-white text-sm font-medium">
+                                <span class="lang-mr">पलाशबाग</span><span class="lang-en">Palasbag</span>
+                            </p>
                         </div>
                     </div>
-                    <div class="gallery-image-container relative rounded-xl overflow-hidden group aspect-[4/3]">
-                        <img src="./assets/rangoli.jpeg" alt="Villagers" class="w-full h-full object-cover" loading="lazy">
-                        <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-4">
-                            <p class="text-white text-sm font-medium"><span class="lang-mr">रांगोळी स्पर्धा</span><span class="lang-en">Rangoli Competition</span></p>
+
+                    <!-- Image 10 -->
+                    <div class="gallery-image-container relative rounded-xl overflow-hidden group aspect-[4/3] cursor-pointer shadow-md" onclick="openLightbox(9)">
+                        <img src="./assets/rangoli.jpeg" alt="Rangoli Competition" class="w-full h-full object-cover" loading="lazy">
+                        <div class="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-colors"></div>
+                        <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-4 transform translate-y-2 group-hover:translate-y-0 transition-transform">
+                            <p class="text-white text-sm font-medium">
+                                <span class="lang-mr">रांगोळी स्पर्धा</span><span class="lang-en">Rangoli Competition</span>
+                            </p>
                         </div>
                     </div>
-                    <div class="gallery-image-container relative rounded-xl overflow-hidden group aspect-[4/3]">
-                        <img src="./assets/yoga.jpeg" alt="Villagers" class="w-full h-full object-cover" loading="lazy">
-                        <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-4">
-                            <p class="text-white text-sm font-medium"><span class="lang-mr">योग दिन</span><span class="lang-en">Yoga Day</span></p>
+
+                    <!-- Image 11 -->
+                    <div class="gallery-image-container relative rounded-xl overflow-hidden group aspect-[4/3] cursor-pointer shadow-md" onclick="openLightbox(10)">
+                        <img src="./assets/yoga.jpeg" alt="Yoga Day" class="w-full h-full object-cover" loading="lazy">
+                        <div class="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-colors"></div>
+                        <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-4 transform translate-y-2 group-hover:translate-y-0 transition-transform">
+                            <p class="text-white text-sm font-medium">
+                                <span class="lang-mr">योग दिन</span><span class="lang-en">Yoga Day</span>
+                            </p>
                         </div>
                     </div>
-                    <div class="gallery-image-container relative rounded-xl overflow-hidden group aspect-[4/3]">
-                        <img src="./assets/zp.jpeg" alt="Villagers" class="w-full h-full object-cover" loading="lazy">
-                        <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-4">
-                            <p class="text-white text-sm font-medium"><span class="lang-mr">झेडपी शाळा</span><span class="lang-en">ZP School</span></p>
+
+                    <!-- Image 12 -->
+                    <div class="gallery-image-container relative rounded-xl overflow-hidden group aspect-[4/3] cursor-pointer shadow-md" onclick="openLightbox(11)">
+                        <img src="./assets/zp.jpeg" alt="ZP School" class="w-full h-full object-cover" loading="lazy">
+                        <div class="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-colors"></div>
+                        <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-4 transform translate-y-2 group-hover:translate-y-0 transition-transform">
+                            <p class="text-white text-sm font-medium">
+                                <span class="lang-mr">झेडपी शाळा</span><span class="lang-en">ZP School</span>
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -594,12 +745,12 @@
                 <!-- CUSTOMIZE: Update schemes/notices -->
                 <div class="max-w-3xl mx-auto space-y-4">
                     <!-- Scheme 1 - New -->
-                    <div class="bg-white border border-slate-200 rounded-xl shadow-sm card-hover p-5 md:p-6">
+                    <div class="scheme-card bg-white border border-slate-200 rounded-xl shadow-sm card-hover p-5 md:p-6" onclick="openSchemeModal('pmay')">
                         <div class="flex items-start gap-4">
                             <div class="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0">
                                 <i data-lucide="file-text" class="w-6 h-6 text-secondary-base"></i>
                             </div>
-                            <div class="flex-1 min-w-0">
+                            <div class="flex-1 min-w-0 text-left">
                                 <div class="flex items-center gap-2 mb-1 flex-wrap">
                                     <h3 class="text-lg font-semibold text-slate-900">प्रधानमंत्री आवास योजना</h3>
                                     <span class="bg-secondary-base text-white text-xs px-2 py-0.5 rounded-full"><span class="lang-mr">नवीन</span><span class="lang-en">New</span></span>
@@ -607,16 +758,19 @@
                                 <p class="text-sm text-slate-500 mb-1">Pradhan Mantri Awas Yojana</p>
                                 <p class="text-base text-slate-600"><span class="lang-mr">घरकुल योजनेसाठी अर्ज करा</span><span class="lang-en">Apply for housing scheme</span></p>
                             </div>
+                            <div class="flex-shrink-0 self-center">
+                                <i data-lucide="chevron-right" class="w-5 h-5 text-slate-400"></i>
+                            </div>
                         </div>
                     </div>
 
                     <!-- Scheme 2 - New -->
-                    <div class="bg-white border border-slate-200 rounded-xl shadow-sm card-hover p-5 md:p-6">
+                    <div class="scheme-card bg-white border border-slate-200 rounded-xl shadow-sm card-hover p-5 md:p-6" onclick="openSchemeModal('sbm')">
                         <div class="flex items-start gap-4">
                             <div class="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0">
                                 <i data-lucide="file-text" class="w-6 h-6 text-secondary-base"></i>
                             </div>
-                            <div class="flex-1 min-w-0">
+                            <div class="flex-1 min-w-0 text-left">
                                 <div class="flex items-center gap-2 mb-1 flex-wrap">
                                     <h3 class="text-lg font-semibold text-slate-900">स्वच्छ भारत मिशन</h3>
                                     <span class="bg-secondary-base text-white text-xs px-2 py-0.5 rounded-full"><span class="lang-mr">नवीन</span><span class="lang-en">New</span></span>
@@ -624,33 +778,42 @@
                                 <p class="text-sm text-slate-500 mb-1">Swachh Bharat Mission</p>
                                 <p class="text-base text-slate-600"><span class="lang-mr">शौचालय बांधकाम अनुदान</span><span class="lang-en">Toilet construction subsidy</span></p>
                             </div>
+                            <div class="flex-shrink-0 self-center">
+                                <i data-lucide="chevron-right" class="w-5 h-5 text-slate-400"></i>
+                            </div>
                         </div>
                     </div>
 
                     <!-- Scheme 3 -->
-                    <div class="bg-white border border-slate-200 rounded-xl shadow-sm card-hover p-5 md:p-6">
+                    <div class="scheme-card bg-white border border-slate-200 rounded-xl shadow-sm card-hover p-5 md:p-6" onclick="openSchemeModal('pmksy')">
                         <div class="flex items-start gap-4">
                             <div class="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0">
                                 <i data-lucide="file-text" class="w-6 h-6 text-secondary-base"></i>
                             </div>
-                            <div class="flex-1 min-w-0">
+                            <div class="flex-1 min-w-0 text-left">
                                 <h3 class="text-lg font-semibold text-slate-900 mb-1">कृषी सिंचन योजना</h3>
                                 <p class="text-sm text-slate-500 mb-1">Krishi Sinchan Yojana</p>
                                 <p class="text-base text-slate-600"><span class="lang-mr">सूक्ष्म सिंचन सुविधा</span><span class="lang-en">Micro irrigation facility</span></p>
+                            </div>
+                            <div class="flex-shrink-0 self-center">
+                                <i data-lucide="chevron-right" class="w-5 h-5 text-slate-400"></i>
                             </div>
                         </div>
                     </div>
 
                     <!-- Scheme 4 -->
-                    <div class="bg-white border border-slate-200 rounded-xl shadow-sm card-hover p-5 md:p-6">
+                    <div class="scheme-card bg-white border border-slate-200 rounded-xl shadow-sm card-hover p-5 md:p-6" onclick="openSchemeModal('mgnrega')">
                         <div class="flex items-start gap-4">
                             <div class="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0">
                                 <i data-lucide="file-text" class="w-6 h-6 text-secondary-base"></i>
                             </div>
-                            <div class="flex-1 min-w-0">
+                            <div class="flex-1 min-w-0 text-left">
                                 <h3 class="text-lg font-semibold text-slate-900 mb-1">महात्मा गांधी रोजगार हमी</h3>
                                 <p class="text-sm text-slate-500 mb-1">MGNREGA</p>
                                 <p class="text-base text-slate-600"><span class="lang-mr">रोजगार नोंदणी सुरू</span><span class="lang-en">Employment registration open</span></p>
+                            </div>
+                            <div class="flex-shrink-0 self-center">
+                                <i data-lucide="chevron-right" class="w-5 h-5 text-slate-400"></i>
                             </div>
                         </div>
                     </div>
@@ -1081,6 +1244,269 @@
             formSuccess.classList.add('hidden');
             formError.classList.add('hidden');
         }
+
+        // Scheme Modal Logic
+        const schemesData = {
+            pmay: {
+                titleMr: 'प्रधानमंत्री आवास योजना (ग्रामीण)',
+                titleEn: 'Pradhan Mantri Awas Yojana (Gramin)',
+                descriptionMr: 'ग्रामीण भागातील बेघर आणि कच्च्या घरात राहणाऱ्या कुटुंबांना पक्के घर बांधण्यासाठी आर्थिक मदत दिली जाते.',
+                descriptionEn: 'Financial assistance is provided to homeless families and those living in kucha houses in rural areas to build permanent houses.',
+                benefitsMr: ['पक्के घर बांधण्यासाठी ₹१.२० लाख पर्यंत अनुदान.', 'शौचालय बांधण्यासाठी ₹१२,००० अतिरिक्त.', '९०-९५ दिवसांची अकुशल मजुरी (मनरेगा अंतर्गत).'],
+                benefitsEn: ['Grant of up to ₹1.20 lakh for building a permanent house.', 'Additional ₹12,000 for toilet construction.', '90-95 days of unskilled labor (under MGNREGA).'],
+                eligibilityMr: ['बेघर कुटुंबे.', 'ज्या कुटुंबाकडे कच्चे घर आहे.', 'अनुसूचित जाती, जमाती आणि अल्पसंख्याक कुटुंबे.'],
+                eligibilityEn: ['Homeless families.', 'Families living in kucha houses.', 'SC, ST, and minority families.'],
+                documentsMr: ['आधार कार्ड', 'बँक पासबुक', 'जगाचा उतारा (७/१२)', 'नरेगा जॉब कार्ड'],
+                documentsEn: ['Aadhaar Card', 'Bank Passbook', 'Land Documents (7/12)', 'MGNREGA Job Card']
+            },
+            sbm: {
+                titleMr: 'स्वच्छ भारत मिशन',
+                titleEn: 'Swachh Bharat Mission',
+                descriptionMr: 'ग्रामीण भागातील प्रत्येक कुटुंबाला वैयक्तिक शौचालय उपलब्ध करून देण्यासाठी हे अभियान राबवले जाते.',
+                descriptionEn: 'This mission is implemented to provide individual toilets to every household in rural areas.',
+                benefitsMr: ['शौचालय बांधकामासाठी ₹१२,००० प्रोत्साहन भत्ता.', 'स्वच्छ आणि आरोग्यदायी वातावरण.'],
+                benefitsEn: ['Incentive of ₹12,000 for toilet construction.', 'Clean and healthy environment.'],
+                eligibilityMr: ['ज्या कुटुंबाकडे स्वतःचे शौचालय नाही.', 'नव्याने लग्न झालेली दाम्पत्ये.'],
+                eligibilityEn: ['Families without their own toilet.', 'Newly married couples.'],
+                documentsMr: ['आधार कार्ड', 'बँक पासबुक', 'जागेचा पुरावा (फोटोसह)'],
+                documentsEn: ['Aadhaar Card', 'Bank Passbook', 'Proof of Location (with photo)']
+            },
+            pmksy: {
+                titleMr: 'प्रधानमंत्री कृषी सिंचन योजना',
+                titleEn: 'Pradhan Mantri Krishi Sinchayee Yojana',
+                descriptionMr: 'पाण्याचा कार्यक्षम वापर आणि शेतीसाठी सिंचन सुविधा वाढवण्यासाठी ही योजना आहे.',
+                descriptionEn: 'This scheme aims to increase water-use efficiency and irrigation facilities for agriculture.',
+                benefitsMr: ['ठिबक सिंचनासाठी ८०% ते ९०% पर्यंत अनुदान.', 'तुषार सिंचनासाठी अनुदान.', 'पाण्याची बचत आणि उत्पादनात वाढ.'],
+                benefitsEn: ['80% to 90% subsidy for drip irrigation.', 'Subsidy for sprinkler irrigation.', 'Water saving and increased production.'],
+                eligibilityMr: ['अल्प व अत्यल्प भूधारक शेतकरी.', 'सर्व जाती-धर्माचे पात्र शेतकरी.'],
+                eligibilityEn: ['Small and marginal farmers.', 'Eligible farmers of all castes and religions.'],
+                documentsMr: ['७/१२ आणि ८-अ उतारा', 'आधार कार्ड', 'बँक पासबुक', 'जातीचा दाखला (आवश्यक असल्यास)'],
+                documentsEn: ['7/12 and 8-A Extract', 'Aadhaar Card', 'Bank Passbook', 'Caste Certificate (if required)']
+            },
+            mgnrega: {
+                titleMr: 'महात्मा गांधी राष्ट्रीय ग्रामीण रोजगार हमी योजना',
+                titleEn: 'MGNREGA',
+                descriptionMr: 'ग्रामीण भागातील प्रत्येक कुटुंबाला एका वर्षात किमान १०० दिवसांच्या रोजगाराची हमी दिली जाते.',
+                descriptionEn: 'Guaranteed at least 100 days of employment in a year to every household in rural areas.',
+                benefitsMr: ['किमान १०० दिवसांचा हमीयुक्त रोजगार.', 'वेळेवर मजुरीचे वाटप.', 'गावाच्या विकासासाठी कामाची संधी.'],
+                benefitsEn: ['Guaranteed 100 days of employment.', 'Timely wage disbursement.', 'Opportunity for village development works.'],
+                eligibilityMr: ['गावातील १८ वर्षांवरील सर्व प्रौढ नागरिक.', 'काम करण्याची इच्छा असलेले मजूर.'],
+                eligibilityEn: ['All adult citizens above 18 years in the village.', 'Laborers willing to work.'],
+                documentsMr: ['आधार कार्ड', 'पासपोर्ट फोटो', 'बँक पासबुक', 'रहिवासी पुरावा'],
+                documentsEn: ['Aadhaar Card', 'Passport Photo', 'Bank Passbook', 'Residence Proof']
+            }
+        };
+
+        function openSchemeModal(schemeId) {
+            const scheme = schemesData[schemeId];
+            if (!scheme) return;
+
+            const modalOverlay = document.getElementById('scheme-modal');
+            const modalContent = document.getElementById('modal-content');
+
+            const isEn = document.body.classList.contains('lang-en');
+            
+            const title = isEn ? scheme.titleEn : scheme.titleMr;
+            const desc = isEn ? scheme.descriptionEn : scheme.descriptionMr;
+            const benefits = isEn ? scheme.benefitsEn : scheme.benefitsMr;
+            const eligibility = isEn ? scheme.eligibilityEn : scheme.eligibilityMr;
+            const docs = isEn ? scheme.documentsEn : scheme.documentsMr;
+
+            const labels = isEn ? 
+                { benefits: 'Benefits', eligibility: 'Eligibility', documents: 'Required Documents' } : 
+                { benefits: 'लाभ / फायदे', eligibility: 'पात्रता', documents: 'आवश्यक कागदपत्रे' };
+
+            let contentHtml = `
+                <div class="mb-6">
+                    <p class="text-slate-600 leading-relaxed">${desc}</p>
+                </div>
+                
+                <div class="space-y-6">
+                    <div>
+                        <h4 class="flex items-center gap-2 font-bold text-primary-base mb-3 text-lg">
+                            <i data-lucide="gift" class="w-5 h-5"></i>
+                            ${labels.benefits}
+                        </h4>
+                        <ul class="list-none space-y-2 ml-1">
+                            ${benefits.map(b => `<li class="flex items-start gap-2 text-slate-600"><i data-lucide="check-circle-2" class="w-5 h-5 text-emerald-500 mt-0.5 flex-shrink-0"></i>${b}</li>`).join('')}
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 class="flex items-center gap-2 font-bold text-primary-base mb-3 text-lg">
+                            <i data-lucide="user-check" class="w-5 h-5"></i>
+                            ${labels.eligibility}
+                        </h4>
+                        <ul class="list-none space-y-2 ml-1">
+                            ${eligibility.map(e => `<li class="flex items-start gap-2 text-slate-600"><i data-lucide="check-circle-2" class="w-5 h-5 text-blue-500 mt-0.5 flex-shrink-0"></i>${e}</li>`).join('')}
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 class="flex items-center gap-2 font-bold text-primary-base mb-3 text-lg">
+                            <i data-lucide="file-check" class="w-5 h-5"></i>
+                            ${labels.documents}
+                        </h4>
+                        <div class="flex flex-wrap gap-2">
+                            ${docs.map(d => `<span class="bg-slate-100 text-slate-700 px-3 py-1.5 rounded-lg text-sm border border-slate-200 font-medium">${d}</span>`).join('')}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-8 pt-6 border-t border-slate-100">
+                    <a href="#contact-form" onclick="closeSchemeModal()" class="w-full inline-flex items-center justify-center bg-primary-base hover:bg-primary-hover text-white py-3 rounded-xl font-semibold transition-all shadow-md hover:shadow-lg gap-2">
+                        <i data-lucide="message-square" class="w-5 h-5"></i>
+                        <span>${isEn ? 'Enquire Now' : 'अधिक माहितीसाठी संपर्क करा'}</span>
+                    </a>
+                </div>
+            `;
+
+            document.getElementById('modal-title').textContent = title;
+            modalContent.innerHTML = contentHtml;
+            modalOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            lucide.createIcons();
+        }
+
+        function closeSchemeModal() {
+            const modalOverlay = document.getElementById('scheme-modal');
+            if (modalOverlay) {
+                modalOverlay.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        }
+
+        // Gallery Lightbox Logic
+        let currentImageIndex = 0;
+        const galleryItems = [
+            { src: './assets/gp_pic.jpeg', mr: 'ग्रामपंचायत आष्टा', en: 'Grampanchayat Ashta' },
+            { src: './assets/arogya_shibir.jpeg', mr: 'आरोग्य शिबिर', en: 'Health Camp' },
+            { src: './assets/cleanup.jpeg', mr: 'स्वच्छता अभियान', en: 'Cleanup Drive' },
+            { src: './assets/ek_ghas_mayecha.jpeg', mr: 'एक घास मायेचा उपक्रम', en: 'Ek Ghas Mayecha Upakram' },
+            { src: './assets/ghantagadi.jpeg', mr: 'स्वच्छता अभियान', en: 'Cleanup Drive by Ghantagadi' },
+            { src: './assets/gramsabha.jpeg', mr: 'ग्रामसभा', en: 'Gramsabha' },
+            { src: './assets/heatwawe_info.jpeg', mr: 'उष्माघात माहिती', en: 'Heatwave Information' },
+            { src: './assets/mahila_sabha.jpeg', mr: 'महिला बचत गट', en: 'Mahila Bachat Gat' },
+            { src: './assets/palasbag.jpeg', mr: 'पलाशबाग', en: 'Palasbag' },
+            { src: './assets/rangoli.jpeg', mr: 'रांगोळी स्पर्धा', en: 'Rangoli Competition' },
+            { src: './assets/yoga.jpeg', mr: 'योग दिन', en: 'Yoga Day' },
+            { src: './assets/zp.jpeg', mr: 'झेडपी शाळा', en: 'ZP School' }
+        ];
+
+        function openLightbox(index) {
+            currentImageIndex = index;
+            updateLightboxContent();
+            const lightbox = document.getElementById('gallery-lightbox');
+            if (lightbox) {
+                lightbox.classList.add('active');
+                document.body.style.overflow = 'hidden';
+                lucide.createIcons();
+            }
+        }
+
+        function closeLightbox() {
+            const lightbox = document.getElementById('gallery-lightbox');
+            if (lightbox) {
+                lightbox.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        }
+
+        function updateLightboxContent() {
+            const item = galleryItems[currentImageIndex];
+            const isEn = document.body.classList.contains('lang-en');
+            const lightboxImg = document.getElementById('lightbox-img');
+            const lightboxCaption = document.getElementById('lightbox-caption');
+            const lightboxCounter = document.getElementById('lightbox-counter');
+            
+            if (lightboxImg) {
+                lightboxImg.style.opacity = '0';
+                setTimeout(() => {
+                    lightboxImg.src = item.src;
+                    if (lightboxCaption) lightboxCaption.textContent = isEn ? item.en : item.mr;
+                    if (lightboxCounter) lightboxCounter.textContent = `${currentImageIndex + 1} / ${galleryItems.length}`;
+                    lightboxImg.style.opacity = '1';
+                }, 100);
+            }
+        }
+
+        function nextImage() {
+            currentImageIndex = (currentImageIndex + 1) % galleryItems.length;
+            updateLightboxContent();
+        }
+
+        function prevImage() {
+            currentImageIndex = (currentImageIndex - 1 + galleryItems.length) % galleryItems.length;
+            updateLightboxContent();
+        }
+
+        // Keyboard support for Gallery and Modals
+        document.addEventListener('keydown', (e) => {
+            const lightbox = document.getElementById('gallery-lightbox');
+            const schemeModal = document.getElementById('scheme-modal');
+
+            if (lightbox && lightbox.classList.contains('active')) {
+                if (e.key === 'ArrowRight') nextImage();
+                if (e.key === 'ArrowLeft') prevImage();
+                if (e.key === 'Escape') closeLightbox();
+            } else if (schemeModal && schemeModal.classList.contains('active')) {
+                if (e.key === 'Escape') closeSchemeModal();
+            }
+        });
     </script>
+
+    <!-- Scheme Modal -->
+    <div id="scheme-modal" class="modal-overlay fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 transition-all duration-300">
+        <div class="modal-container bg-white w-full max-w-2xl max-h-[90vh] rounded-2xl shadow-2xl overflow-hidden flex flex-col">
+            <!-- Modal Header -->
+            <div class="p-4 md:p-6 border-b border-slate-100 flex items-start justify-between bg-white sticky top-0 z-10">
+                <h3 id="modal-title" class="text-xl md:text-2xl font-bold text-slate-900 pr-8">योजना तपशील</h3>
+                <button onclick="closeSchemeModal()" class="p-2 rounded-lg hover:bg-slate-100 transition-colors text-slate-400 hover:text-slate-600">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+            
+            <!-- Modal Body -->
+            <div id="modal-content" class="p-4 md:p-8 overflow-y-auto custom-scrollbar">
+                <!-- Content injected via JS -->
+            </div>
+        </div>
+        <!-- Click outside to close -->
+        <div class="absolute inset-0 -z-10" onclick="closeSchemeModal()"></div>
+    </div>
+
+    <!-- Gallery Lightbox -->
+    <div id="gallery-lightbox" class="lightbox-overlay fixed inset-0 z-[110] bg-black/95 flex items-center justify-center transition-all duration-300">
+        <!-- Close Button -->
+        <button onclick="closeLightbox()" class="absolute top-6 right-6 z-[120] glass-btn p-3 rounded-full opacity-70 hover:opacity-100">
+            <i data-lucide="x" class="w-6 h-6"></i>
+        </button>
+
+        <!-- Counter -->
+        <div id="lightbox-counter" class="absolute top-6 left-6 z-[120] px-4 py-2 glass-btn rounded-full text-sm font-semibold opacity-70">
+            1 / 12
+        </div>
+
+        <!-- Navigation Buttons -->
+        <button onclick="prevImage()" class="absolute left-4 md:left-8 z-[120] glass-btn p-4 rounded-full shadow-lg group">
+            <i data-lucide="chevron-left" class="w-8 h-8 group-hover:-translate-x-1 transition-transform"></i>
+        </button>
+        <button onclick="nextImage()" class="absolute right-4 md:right-8 z-[120] glass-btn p-4 rounded-full shadow-lg group">
+            <i data-lucide="chevron-right" class="w-8 h-8 group-hover:translate-x-1 transition-transform"></i>
+        </button>
+
+        <!-- Image Container -->
+        <div class="lightbox-img-container max-w-5xl w-full px-12 md:px-0 flex flex-col items-center">
+            <div class="relative group">
+                <img id="lightbox-img" src="" alt="Gallery Image" class="max-h-[75vh] md:max-h-[80vh] rounded-lg shadow-2xl transition-opacity duration-300">
+            </div>
+            <div class="mt-8 text-center px-4">
+                <p id="lightbox-caption" class="text-white text-xl md:text-2xl font-semibold tracking-wide bg-black/40 backdrop-blur-sm px-6 py-3 rounded-xl border border-white/10"></p>
+            </div>
+        </div>
+
+        <!-- Click outside to close (background area) -->
+        <div class="absolute inset-0 -z-10" onclick="closeLightbox()"></div>
+    </div>
 </body>
 </html>
